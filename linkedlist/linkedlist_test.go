@@ -132,3 +132,87 @@ func TestMultiNode(t *testing.T) {
 
 	llist.printList()
 }
+
+func TestRemoveNode(t *testing.T) {
+	llist := New()
+
+	ensureEmptyList(llist, t)
+
+	llist.PushFront(1)
+	node := llist.Head()
+
+	llist.RemoveNode(node)
+
+	ensureEmptyList(llist, t)
+
+	// 0 <-> 1 <-> 2
+	node1 := llist.PushBack(1)
+	node2 := llist.PushBack(2)
+	node0 := llist.PushFront(0)
+
+	// 0 <-> 2
+	llist.RemoveNode(node1)
+
+	if llist.Head() != node0 {
+		t.Errorf("head of the linked list should be the node with value 0")
+	}
+
+	if llist.Tail() != node2 {
+		t.Errorf("tail of the linked list should be the node with value 2")
+	}
+
+	if llist.Len() != 2 {
+		t.Errorf("length of the linked list should be 2")
+	}
+
+	// 0 <-> 2 <-> 3
+	node3 := llist.PushBack(3)
+
+	// 2 <-> 3
+	llist.RemoveNode(node0)
+
+	if llist.Head() != node2 {
+		t.Errorf("head of the linked list should be the node with value 2")
+	}
+
+	if llist.Tail() != node3 {
+		t.Errorf("tail of the linked list should be the node with value 3")
+	}
+
+	// -1 <-> 2 <-> 3 <-> 5
+	nodem1 := llist.PushFront(-1)
+	node5 := llist.PushBack(5)
+
+	// -1 <-> 2 <-> 3
+	llist.RemoveNode(node5)
+
+	if llist.Head() != nodem1 {
+		t.Errorf("tail of the linked list should be the node with value -1")
+	}
+
+	if llist.Tail() != node3 {
+		t.Errorf("tail of the linked list should be the node with value 3")
+	}
+
+	if llist.Len() != 3 {
+		t.Errorf("length of the linked list should be 3")
+	}
+
+	// 2 <-> 3
+	llist.RemoveHead()
+
+	if llist.Head() != node2 {
+		t.Errorf("head of the linked list should be the node with value 2")
+	}
+
+	// 2
+	llist.RemoveTail()
+
+	if llist.Tail() != node2 {
+		t.Errorf("tail of the linked list should be the node with value 2")
+	}
+
+	llist.RemoveHead()
+
+	ensureEmptyList(llist, t)
+}

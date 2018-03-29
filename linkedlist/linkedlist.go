@@ -119,6 +119,49 @@ func (ll *LinkedList) PushBack(v interface{}) *Node {
 	return ll.push(v, false)
 }
 
+// Removes given node from the linked list
+func (ll *LinkedList) RemoveNode(node *Node) {
+	if node == nil {
+		return
+	}
+
+	next := node.next
+	prev := node.prev
+
+	// if this is the last elem in the list
+	if ll.len == 1 {
+		ll.head = nil
+		ll.tail = nil
+	} else {
+		next.prev = prev
+		prev.next = next
+		if node == ll.head {
+			ll.head = next
+		}
+		if node == ll.tail {
+			ll.tail = prev
+		}
+	}
+
+	ll.len -= 1
+}
+
+// Removes the head of the linked list
+func (ll *LinkedList) RemoveHead() {
+	if ll == nil || ll.Len() == 0 {
+		return
+	}
+	ll.RemoveNode(ll.Head())
+}
+
+// Removes the tail of the linked list
+func (ll *LinkedList) RemoveTail() {
+	if ll == nil || ll.Len() == 0 {
+		return
+	}
+	ll.RemoveNode(ll.Tail())
+}
+
 // Prints the list used for debugging
 func (ll *LinkedList) printList() {
 	fmt.Println("---Start---")
