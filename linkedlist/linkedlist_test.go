@@ -192,6 +192,27 @@ func TestMoveFront(t *testing.T) {
 	if llist.Tail() != node1 {
 		t.Errorf("tail should 1 after moving tail to head")
 	}
+
+	// 3 <-> 2 <-> 1
+	node3 := llist.PushFront(3)
+
+	// 2 <-> 3 <-> 1
+	llist.MoveFront(node2)
+	if llist.Head() != node2 {
+		t.Errorf("node 2 should be new head")
+	}
+
+	if node2.Next() != node3 || node3.Prev() != node2 {
+		t.Errorf("2 <-> 3 broken")
+	}
+
+	if node3.Next() != node1 || node1.Prev() != node3 {
+		t.Errorf("3 <-> 1 broken")
+	}
+
+	if node1.Next() != node2 || node2.Prev() != node1 {
+		t.Errorf("1 <-> 2 broken")
+	}
 }
 
 func TestMoveBack(t *testing.T) {

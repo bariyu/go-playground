@@ -129,6 +129,7 @@ func (ll *LinkedList) MoveFront(node *Node) {
 	ll.tail.next = node
 	node.prev = ll.tail
 	node.next = oldHead
+	oldHead.prev = node
 }
 
 // Moves given node to the back of the list
@@ -150,6 +151,7 @@ func (ll *LinkedList) MoveBack(node *Node) {
 	ll.head.prev = node
 	node.prev = oldTail
 	node.next = ll.head
+	oldTail.next = node
 }
 
 // Adds new element to the end of the linked list and returns new node
