@@ -80,6 +80,12 @@ func TestSingleNode(t *testing.T) {
 		t.Errorf("linked list head and tail values should be 42")
 	}
 
+	llist.MoveFront(head)
+	if head != llist.Head() {
+		t.Errorf("42 should be the head of the linked list after moving it to front")
+	}
+	llist.printList()
+
 	if llist.Len() != 1 {
 		t.Errorf("length of the linked list should be 1")
 	}
@@ -90,6 +96,7 @@ func TestMultiNode(t *testing.T) {
 
 	ensureEmptyList(llist, t)
 
+	// 1 <-> 1
 	llist.PushFront(1)
 	llist.PushFront(1)
 
@@ -108,6 +115,7 @@ func TestMultiNode(t *testing.T) {
 		t.Errorf("length of linked list should be 2")
 	}
 
+	// 0 <-> 1 <-> 1 <-> 2
 	llist.PushFront(0)
 	llist.PushBack(2)
 
@@ -131,6 +139,91 @@ func TestMultiNode(t *testing.T) {
 	}
 
 	llist.printList()
+
+	// 2 <-> 0 <-> 1 <-> 1
+	llist.MoveFront(tail)
+	if llist.Head() != tail {
+		t.Errorf("old tail should be new head")
+	}
+	if llist.Tail().Value != 1 {
+		t.Errorf("new tail should be 1")
+	}
+
+	node2 := llist.Head()
+	// 0 <-> 1 <-> 1 <-> 2
+	llist.MoveBack(node2)
+	if llist.Head().Value != 0 {
+		t.Errorf("0 should be new head")
+	}
+	if llist.Tail() != node2 {
+		t.Errorf("new tail should be 2")
+	}
+
+	llist.printList()
+}
+
+func TestMoveFront(t *testing.T) {
+	llist := New()
+
+	ensureEmptyList(llist, t)
+
+	// 1 <-> 2
+	node1 := llist.PushFront(1)
+	node2 := llist.PushBack(2)
+
+	llist.printList()
+
+	// 1 <-> 2
+	llist.MoveFront(node1)
+	if llist.Head() != node1 {
+		t.Errorf("head should 1 after moving it to head")
+	}
+	if llist.Tail() != node2 {
+		t.Errorf("tail should 2 after moving 1 to head")
+	}
+
+	llist.printList()
+
+	// 2 <-> 1
+	llist.MoveFront(node2)
+	if llist.Head() != node2 {
+		t.Errorf("head should 2 after moving tail to head")
+	}
+	if llist.Tail() != node1 {
+		t.Errorf("tail should 1 after moving tail to head")
+	}
+}
+
+func TestMoveBack(t *testing.T) {
+	llist := New()
+
+	ensureEmptyList(llist, t)
+
+	// 1 <-> 2
+	node1 := llist.PushFront(1)
+	node2 := llist.PushBack(2)
+
+	llist.printList()
+
+	// 1 <-> 2
+	llist.MoveBack(node2)
+	if llist.Head() != node1 {
+		t.Errorf("head should 1 after moving 2 to tail")
+	}
+	if llist.Tail() != node2 {
+		t.Errorf("tail should 2 after moving 2 to tail")
+	}
+
+	llist.printList()
+
+	// 2 <-> 1
+	llist.MoveBack(node1)
+	if llist.Head() != node2 {
+		t.Errorf("head should 2 after moving 1 to tail")
+	}
+	if llist.Tail() != node1 {
+		t.Errorf("tail should 1 after moving 1 to tail")
+	}
 }
 
 func TestRemoveNode(t *testing.T) {

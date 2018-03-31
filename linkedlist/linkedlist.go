@@ -110,6 +110,48 @@ func (ll *LinkedList) PushFront(v interface{}) *Node {
 	return ll.push(v, true)
 }
 
+// Moves given node to the front of the list
+func (ll *LinkedList) MoveFront(node *Node) {
+	if node == nil || ll.len == 0 || ll.head == node {
+		return
+	}
+
+	oldHead := ll.head
+	if node == ll.tail {
+		ll.tail = node.prev
+	}
+	node.prev.next = node.next
+	node.next.prev = node.prev
+	node.prev = nil
+	node.next = nil
+
+	ll.head = node
+	ll.tail.next = node
+	node.prev = ll.tail
+	node.next = oldHead
+}
+
+// Moves given node to the back of the list
+func (ll *LinkedList) MoveBack(node *Node) {
+	if node == nil || ll.len == 0 || ll.tail == node {
+		return
+	}
+
+	oldTail := ll.tail
+	if node == ll.head {
+		ll.head = node.next
+	}
+	node.prev.next = node.next
+	node.next.prev = node.prev
+	node.prev = nil
+	node.next = nil
+
+	ll.tail = node
+	ll.head.prev = node
+	node.prev = oldTail
+	node.next = ll.head
+}
+
 // Adds new element to the end of the linked list and returns new node
 func (ll *LinkedList) PushBack(v interface{}) *Node {
 	if ll == nil {
