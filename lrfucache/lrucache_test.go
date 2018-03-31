@@ -194,6 +194,36 @@ func TestLRUCacheSetGetEviction(t *testing.T) {
 
 	cache.PrintCache()
 
+	deleted := cache.Delete(AmsterdamKey)
+	if deleted == true {
+		t.Errorf("shouldn't have deleted amsterdam key from the cache because it shouldn't exist")
+	}
+
+	deleted = cache.Delete(GoogleHQKey)
+	if deleted != true {
+		t.Errorf("should have deleted googlehq key from the cache because it should be in the cache before deleting")
+	}
+
+	position, ok = cache.Get(GoogleHQKey)
+	if ok == true {
+		t.Errorf("should not get googlehq key from the cache because it should been deleted previously")
+	}
+
+	keysDesc := cache.Keys(true)
+	keysAsc := cache.Keys(false)
+	fmt.Printf("desc keys after deleting googlehq: %v\n", keysDesc)
+
+	for i := 0; i < cache.Size(); i++ {
+		descKey := keysDesc[i]
+		ascKey := keysAsc[cache.Size()-1-i]
+
+		if descKey != ascKey {
+			t.Errorf("asc, desc key order doesn't match")
+		}
+	}
+
+	cache.PrintCache()
+
 	cache.Clear()
 	if cache.Size() != 0 {
 		t.Errorf("cache clear failed")

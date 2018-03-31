@@ -6,7 +6,7 @@ import (
 	"github.com/bariyu/go-playground/linkedlist"
 )
 
-type CacheEntry struct {
+type LRUCacheEntry struct {
 	key   interface{}
 	value interface{}
 }
@@ -30,18 +30,18 @@ func (cache *LRUCache) Set(key, value interface{}) (evicted bool) {
 	if ok {
 		cache.list.MoveFront(listNode)
 		cacheEntry := listNode.Value
-		entry := cacheEntry.(*CacheEntry)
+		entry := cacheEntry.(*LRUCacheEntry)
 		entry.value = value
 	} else {
 		if cache.Size() == cache.Capacity() {
 			evicted = true
 			listNodeToEvict := cache.list.Tail()
-			entry := listNodeToEvict.Value.(*CacheEntry)
+			entry := listNodeToEvict.Value.(*LRUCacheEntry)
 			delete(cache.lookup, entry.key)
 			cache.list.RemoveNode(listNodeToEvict)
 		}
-		newCacheEntry := &CacheEntry{key: key, value: value}
-		newListNode := cache.list.PushFront(newCacheEntry)
+		newLRUCacheEntry := &LRUCacheEntry{key: key, value: value}
+		newListNode := cache.list.PushFront(newLRUCacheEntry)
 		cache.lookup[key] = newListNode
 	}
 	return evicted
@@ -52,10 +52,21 @@ func (cache *LRUCache) Get(key interface{}) (value interface{}, ok bool) {
 	if ok {
 		cacheEntry := node.Value
 		cache.list.MoveFront(node)
-		entry := cacheEntry.(*CacheEntry)
+		entry := cacheEntry.(*LRUCacheEntry)
 		return entry.value, ok
 	}
 	return nil, ok
+}
+
+func (cache *LRUCache) Delete(key interface{}) (deleted bool) {
+	deleted = false
+	node, ok := cache.lookup[key]
+	if ok == true {
+		deleted = true
+		delete(cache.lookup, key)
+		cache.list.RemoveNode(node)
+	}
+	return deleted
 }
 
 func (cache *LRUCache) Contains(key interface{}) (ok bool) {
@@ -73,7 +84,7 @@ func (cache *LRUCache) Keys(newest bool) (keys []interface{}) {
 
 	for i := 0; i < cache.Size(); i++ {
 		cacheEntry := runner.Value
-		entry := cacheEntry.(*CacheEntry)
+		entry := cacheEntry.(*LRUCacheEntry)
 		keys = append(keys, entry.key)
 		if newest {
 			runner = runner.Next()
@@ -94,7 +105,7 @@ func (cache *LRUCache) Values(newest bool) (values []interface{}) {
 
 	for i := 0; i < cache.Size(); i++ {
 		cacheEntry := runner.Value
-		entry := cacheEntry.(*CacheEntry)
+		entry := cacheEntry.(*LRUCacheEntry)
 		values = append(values, entry.value)
 		if newest {
 			runner = runner.Next()

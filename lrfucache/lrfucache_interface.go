@@ -9,6 +9,10 @@ type LRFUCache interface {
 	// Updates the frequency or recentness of that key.
 	Get(key interface{}) (value interface{}, ok bool)
 
+	// Tries to delete given key fron the cache
+	// returns true if key is deleted false othwervise
+	Delete(key interface{}) (deleted bool)
+
 	// Checks if key is in the cache or not
 	// doesn't update frequency/recentness of the key.
 	Contains(key interface{}) (ok bool)
