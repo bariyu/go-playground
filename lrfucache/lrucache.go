@@ -6,7 +6,7 @@ import (
 	"github.com/bariyu/go-playground/linkedlist"
 )
 
-type LRUCacheEntry struct {
+type lRUCacheEntry struct {
 	key   interface{}
 	value interface{}
 }
@@ -30,18 +30,18 @@ func (cache *LRUCache) Set(key, value interface{}) (evicted bool) {
 	if ok {
 		cache.list.MoveFront(listNode)
 		cacheEntry := listNode.Value
-		entry := cacheEntry.(*LRUCacheEntry)
+		entry := cacheEntry.(*lRUCacheEntry)
 		entry.value = value
 	} else {
 		if cache.Size() == cache.Capacity() {
 			evicted = true
 			listNodeToEvict := cache.list.Tail()
-			entry := listNodeToEvict.Value.(*LRUCacheEntry)
+			entry := listNodeToEvict.Value.(*lRUCacheEntry)
 			delete(cache.lookup, entry.key)
 			cache.list.RemoveNode(listNodeToEvict)
 		}
-		newLRUCacheEntry := &LRUCacheEntry{key: key, value: value}
-		newListNode := cache.list.PushFront(newLRUCacheEntry)
+		newlRUCacheEntry := &lRUCacheEntry{key: key, value: value}
+		newListNode := cache.list.PushFront(newlRUCacheEntry)
 		cache.lookup[key] = newListNode
 	}
 	return evicted
@@ -52,7 +52,7 @@ func (cache *LRUCache) Get(key interface{}) (value interface{}, ok bool) {
 	if ok {
 		cacheEntry := node.Value
 		cache.list.MoveFront(node)
-		entry := cacheEntry.(*LRUCacheEntry)
+		entry := cacheEntry.(*lRUCacheEntry)
 		return entry.value, ok
 	}
 	return nil, ok
@@ -84,7 +84,7 @@ func (cache *LRUCache) Keys(newest bool) (keys []interface{}) {
 
 	for i := 0; i < cache.Size(); i++ {
 		cacheEntry := runner.Value
-		entry := cacheEntry.(*LRUCacheEntry)
+		entry := cacheEntry.(*lRUCacheEntry)
 		keys = append(keys, entry.key)
 		if newest {
 			runner = runner.Next()
@@ -105,7 +105,7 @@ func (cache *LRUCache) Values(newest bool) (values []interface{}) {
 
 	for i := 0; i < cache.Size(); i++ {
 		cacheEntry := runner.Value
-		entry := cacheEntry.(*LRUCacheEntry)
+		entry := cacheEntry.(*lRUCacheEntry)
 		values = append(values, entry.value)
 		if newest {
 			runner = runner.Next()
