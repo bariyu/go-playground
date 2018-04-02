@@ -7,43 +7,6 @@ import (
 	"time"
 )
 
-type Position struct {
-	Lat float64
-	Lon float64
-}
-
-const BookingHQKey = "thebank"
-
-var BookingHQ = Position{Lat: 52.3655546, Lon: 4.896351}
-
-const AmsterdamKey = "ams"
-
-var Amsterdam = Position{Lat: 52.3702, Lon: 4.8952}
-
-const METUCENGKey = "metuceng"
-
-var METUCENG = Position{Lat: 39.891839, Lon: 32.7811584}
-
-const GoogleHQKey = "googlehq"
-
-var GoogleHQ = Position{Lat: 37.4220, Lon: 122.0841}
-
-const AnitkabirKey = "atam_izindeyiz"
-
-var Anitkabir = Position{Lat: 39.925054, Lon: 32.8347552}
-
-const BrouwerijtIJKey = "coolest_bar_near_my_aparment"
-
-var BrouwerijtIJ = Position{Lat: 52.3677145, Lon: 4.9210217}
-
-const WorkLocationKey = "work"
-
-var UPOffice = Position{Lat: 52.3775935, Lon: 4.9140735}
-
-const FacebookLondonKey = "fb-london"
-
-var FacebookLondon = Position{Lat: 51.5167849, Lon: -0.136269}
-
 func TestLRUCacheSetGetEviction(t *testing.T) {
 	var cache LRFUCache
 	cache = NewLRUCache(5)
@@ -65,39 +28,39 @@ func TestLRUCacheSetGetEviction(t *testing.T) {
 	var position interface{}
 
 	// Getting ams from empty cache
-	position, ok = cache.Get(AmsterdamKey)
+	position, ok = cache.Get(amsterdamKey)
 	if ok == true || position != nil {
-		t.Errorf("should not get Amsterdam's location from empty cache")
+		t.Errorf("should not get amsterdam's location from empty cache")
 	}
 
 	// Setting ams in the cache
-	evicted = cache.Set(AmsterdamKey, Amsterdam)
+	evicted = cache.Set(amsterdamKey, amsterdam)
 	if evicted {
 		t.Errorf("setting amsterdam should not cause eviction")
 	}
 
 	// Getting ams back from the cache
-	position, ok = cache.Get(AmsterdamKey)
-	if ok != true || position != Amsterdam {
-		t.Errorf("should get Amsterdam's location from the cache")
+	position, ok = cache.Get(amsterdamKey)
+	if ok != true || position != amsterdam {
+		t.Errorf("should get amsterdam's location from the cache")
 	}
 
-	evicted = cache.Set(BookingHQKey, BookingHQ)
+	evicted = cache.Set(bookingHQKey, bookingHQ)
 	if evicted {
-		t.Errorf("setting BookingHQ should not cause eviction")
+		t.Errorf("setting bookingHQ should not cause eviction")
 	}
 
-	evicted = cache.Set(AnitkabirKey, Anitkabir)
+	evicted = cache.Set(anitkabirKey, anitkabir)
 	if evicted {
-		t.Errorf("setting Anitkabir should not cause eviction")
+		t.Errorf("setting anitkabir should not cause eviction")
 	}
 
-	evicted = cache.Set(METUCENGKey, METUCENG)
+	evicted = cache.Set(mETUCENGKey, mETUCENG)
 	if evicted {
 		t.Errorf("setting metu ceng should not cause eviction")
 	}
 
-	evicted = cache.Set(GoogleHQKey, GoogleHQ)
+	evicted = cache.Set(googleHQKey, googleHQ)
 	if evicted {
 		t.Errorf("setting googlehq should not cause eviction")
 	}
@@ -106,23 +69,23 @@ func TestLRUCacheSetGetEviction(t *testing.T) {
 	// cache.PrintCache()
 
 	// brouwerijt, google, metuceng, anitkabir, booking
-	evicted = cache.Set(BrouwerijtIJKey, BrouwerijtIJ)
+	evicted = cache.Set(brouwerijtIJKey, brouwerijtIJ)
 	if evicted != true {
-		t.Errorf("setting BrouwerijtIJ should cause eviction")
+		t.Errorf("setting brouwerijtIJ should cause eviction")
 	}
 
-	position, ok = cache.Get(AmsterdamKey)
+	position, ok = cache.Get(amsterdamKey)
 	if ok == true || position != nil {
-		t.Errorf("should not get Amsterdam's location from the cache, it should have been evicted")
+		t.Errorf("should not get amsterdam's location from the cache, it should have been evicted")
 	}
 
 	// work, brouwerijt, google, metuceng, anitkabir
-	evicted = cache.Set(WorkLocationKey, UPOffice)
+	evicted = cache.Set(workLocationKey, uPOffice)
 	if evicted != true {
 		t.Errorf("setting work should cause eviction")
 	}
 
-	position, ok = cache.Get(BookingHQKey)
+	position, ok = cache.Get(bookingHQKey)
 	if ok == true || position != nil {
 		t.Errorf("should not get thebank's location from the cache, it should have been evicted")
 	}
@@ -132,32 +95,32 @@ func TestLRUCacheSetGetEviction(t *testing.T) {
 	// This key is quite special and should never ever be evicted :)
 	// Call get to make sure to move it to the head.
 	// anitkabir, work, brouwerijt, google, metuceng
-	cache.Get(AnitkabirKey)
+	cache.Get(anitkabirKey)
 
 	// work, anitkabir, brouwerijt, google, metuceng
 	// longer commute :(
-	evicted = cache.Set(WorkLocationKey, BookingHQ)
+	evicted = cache.Set(workLocationKey, bookingHQ)
 	if evicted {
 		t.Errorf("no need to evict anything, updating existing key work in the cache")
 	}
 
-	coolOffices := []Position{
-		FacebookLondon,
-		GoogleHQ,
-		BookingHQ,
+	coolOffices := []testPosition{
+		facebookLondon,
+		googleHQ,
+		bookingHQ,
 	}
 	rand.Seed(time.Now().UnixNano())
 	nextLocation := coolOffices[rand.Intn(len(coolOffices)-1)]
 	fmt.Printf("NEXT: %v\n", nextLocation)
-	cache.Set(WorkLocationKey, nextLocation)
+	cache.Set(workLocationKey, nextLocation)
 
-	cache.Get(AnitkabirKey)
+	cache.Get(anitkabirKey)
 	desiredKeys := []string{
-		AnitkabirKey,
-		WorkLocationKey,
-		BrouwerijtIJKey,
-		GoogleHQKey,
-		METUCENGKey,
+		anitkabirKey,
+		workLocationKey,
+		brouwerijtIJKey,
+		googleHQKey,
+		mETUCENGKey,
 	}
 
 	keys := cache.Keys(true)
@@ -171,12 +134,12 @@ func TestLRUCacheSetGetEviction(t *testing.T) {
 		}
 	}
 
-	desiredLocations := []Position{
-		Anitkabir,
+	desiredLocations := []testPosition{
+		anitkabir,
 		nextLocation,
-		BrouwerijtIJ,
-		GoogleHQ,
-		METUCENG,
+		brouwerijtIJ,
+		googleHQ,
+		mETUCENG,
 	}
 	keys, values := cache.Enumerate(true)
 	for i := 0; i < 5; i++ {
@@ -194,17 +157,17 @@ func TestLRUCacheSetGetEviction(t *testing.T) {
 
 	cache.PrintCache()
 
-	deleted := cache.Delete(AmsterdamKey)
+	deleted := cache.Delete(amsterdamKey)
 	if deleted == true {
 		t.Errorf("shouldn't have deleted amsterdam key from the cache because it shouldn't exist")
 	}
 
-	deleted = cache.Delete(GoogleHQKey)
+	deleted = cache.Delete(googleHQKey)
 	if deleted != true {
 		t.Errorf("should have deleted googlehq key from the cache because it should be in the cache before deleting")
 	}
 
-	position, ok = cache.Get(GoogleHQKey)
+	position, ok = cache.Get(googleHQKey)
 	if ok == true {
 		t.Errorf("should not get googlehq key from the cache because it should been deleted previously")
 	}
