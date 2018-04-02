@@ -330,3 +330,69 @@ func TestRemoveNode(t *testing.T) {
 
 	ensureEmptyList(llist, t)
 }
+
+func TestPushAfterBefore(t *testing.T) {
+	llist := New()
+
+	ensureEmptyList(llist, t)
+
+	// 1
+	node1 := llist.PushFront(1)
+
+	// 1 <-> 3
+	node3 := llist.PushAfter(2, node1)
+
+	if llist.Tail() != node3 {
+		t.Errorf("tail of linked list should be node with value 3")
+	}
+
+	if llist.Head() != node1 {
+		t.Errorf("head of linked list should be node with value 1")
+	}
+
+	// 0 <-> 1 <-> 3
+	node0 := llist.PushBefore(0, node1)
+	if llist.Head() != node0 {
+		t.Errorf("head of linked list should be node with value 0")
+	}
+
+	if llist.Tail() != node3 {
+		t.Errorf("tail of linked list should be node with value 3")
+	}
+
+	// 0 <-> 1
+	if node0.Next() != node1 || node1.Prev() != node0 {
+		t.Errorf("broken links 0 <-> 1")
+	}
+
+	// 1 <-> 3
+	if node1.Next() != node3 || node3.Prev() != node1 {
+		t.Errorf("broken links 1 <-> 2")
+	}
+
+	// 3 <-> 0
+	if node3.Next() != node0 || node0.Prev() != node3 {
+		t.Errorf("broken links 3 <-> 0")
+	}
+
+	// 0 <-> 1 <-> 2 <-> 3
+	node2 := llist.PushAfter(2, node1)
+	if node2.Prev() != node1 || node1.Next() != node2 || node3.Prev() != node2 || node2.Next() != node3 {
+		t.Errorf("cannot push after properly")
+	}
+
+	if llist.Len() != 4 {
+		t.Errorf("length of the of linked list should be 4")
+	}
+
+	// 0 <-> 5 <-> 1 <-> 2 <-> 3
+	node5 := llist.PushBefore(5, node1)
+	if node5.Next() != node1 || node1.Prev() != node5 || node5.Prev() != node0 || node0.Next() != node5 {
+		t.Errorf("cannot push before properly")
+	}
+
+	if llist.Len() != 5 {
+		t.Errorf("length of the of linked list should be 5")
+	}
+
+}
