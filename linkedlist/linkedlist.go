@@ -273,3 +273,11 @@ func (ll *LinkedList) printList() {
 
 	fmt.Print("---End---")
 }
+
+func (ll *LinkedList) PrintList(elemPrintFunc func(value interface{})) {
+	runner := ll.Head()
+	for i := 0; i < ll.Len(); i++ {
+		elemPrintFunc(runner.Value)
+		runner = runner.Next()
+	}
+}
