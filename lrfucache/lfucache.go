@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bariyu/go-playground/linkedlist"
+	"github.com/fatih/color"
 )
 
 type lFUCacheFreqNode struct {
@@ -45,6 +46,10 @@ func (cache *LFUCache) Set(key, value interface{}) (evicted bool) {
 			// last freq node should evict an item
 			llFreqNodeToTrim := cache.list.Tail()
 			freqNodeToTrim := llFreqNodeToTrim.Value.(*lFUCacheFreqNode)
+			keyToDelete := freqNodeToTrim.entryList.Tail().Value.(*lFUCacheEntry).key
+
+			// delete evicted key from lookup
+			delete(cache.lookup, keyToDelete)
 
 			// remove last element from freq node
 			freqNodeToTrim.entryList.RemoveTail()
@@ -201,6 +206,11 @@ func (cache *LFUCache) Keys(newest bool) (keys []interface{}) {
 				entryListRunner = entryListRunner.Prev()
 			}
 		}
+		if newest == false {
+			runner = runner.Prev()
+		} else {
+			runner = runner.Next()
+		}
 	}
 	return keys
 }
@@ -233,6 +243,11 @@ func (cache *LFUCache) Values(newest bool) (values []interface{}) {
 				entryListRunner = entryListRunner.Prev()
 			}
 		}
+		if newest == false {
+			runner = runner.Prev()
+		} else {
+			runner = runner.Next()
+		}
 	}
 	return values
 }
@@ -257,8 +272,30 @@ func (cache *LFUCache) Clear() {
 }
 
 func (cache *LFUCache) PrintCache() {
-	fmt.Println("---Start---")
+	fmt.Println("---LFUCACHE START---")
 	fmt.Printf("Capacity: %v, Size: %v\n", cache.Capacity(), cache.Size())
+	fmt.Printf("Keys %v, Values: %v\n", cache.Keys(true), cache.Values(true))
 	fmt.Printf("Lookup: %v\n", cache.lookup)
-	fmt.Println("---End---")
+
+	fmt.Println("\n---ACTUAL DATA STRUCTURES---")
+
+	cacheEntryPrinter := func(value interface{}) {
+		c := color.New(color.FgBlue) //.Add(color.BgBlue)
+		entryToPrint := value.(*lFUCacheEntry)
+		c.Printf("[key: %v, value %v] --> ", entryToPrint.key, entryToPrint.value)
+	}
+
+	freqNodePrinter := func(value interface{}) {
+		freqNodeToPrint := value.(*lFUCacheFreqNode)
+		color.Green("-FNode- freq: %d, entryList with %d elems:", freqNodeToPrint.frequency, freqNodeToPrint.entryList.Len())
+		freqNodeToPrint.entryList.PrintList(cacheEntryPrinter)
+		color.Red("nil\n")
+	}
+
+	cache.list.PrintList(freqNodePrinter)
+
+	fmt.Println("---END ACTUAL DATA STRUCTURES---")
+	fmt.Println()
+
+	fmt.Println("---LFUCACHE END---")
 }
